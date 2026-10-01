@@ -127,6 +127,10 @@ function productImageUrl(?string $img): string {
     if ($img && file_exists(UPLOAD_PATH . 'products/' . $img)) {
         return UPLOAD_URL . 'products/' . $img;
     }
+    // Visuels du catalogue générés par tools/product-images (versionnés avec le code)
+    if ($img && is_file(ROOT_PATH . '/assets/images/products/' . basename($img))) {
+        return ASSETS_URL . '/images/products/' . basename($img);
+    }
     return ASSETS_URL . '/images/product-placeholder.svg';
 }
 
