@@ -1,0 +1,5 @@
+Logos de marques : fichiers SVG issus de Simple Icons (https://simpleicons.org), publiés sous licence CC0 1.0.
+Les marques et logos restent la propriété de leurs détenteurs respectifs ; leur usage doit respecter
+les règles de chaque marque (voir https://github.com/simple-icons/simple-icons/blob/develop/DISCLAIMER.md).
+Les marques retirées de Simple Icons à leur demande n'ont pas de logo ici : la carte affiche alors une icône
+de catégorie (Bootstrap Icons, licence MIT) et le nom du produit.

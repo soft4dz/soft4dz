@@ -2,131 +2,92 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<title>Soft4dz — visuel produit</title>
+<title>Soft4dz — carte produit</title>
+<!-- Même composant que la carte du canevas Claude Design « Soft4dz — Cartes produits » (Card.dc.html),
+     rendu plein cadre 400×300 puis exporté ×3 (1200×900) par generate.mjs. -->
 <style>
   @font-face { font-family: 'Rubik'; src: url(fonts/rubik-latin.woff2) format('woff2'); font-weight: 300 900; }
   @font-face { font-family: 'Nunito Sans'; src: url(fonts/nunitosans-latin.woff2) format('woff2'); font-weight: 200 1000; }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 1200px; height: 900px; overflow: hidden; }
-  body {
-    --from: #1e0a3c; --to: #6d28d9; --accent: #e879f9;
-    position: relative; font-family: 'Rubik', sans-serif; color: #fff; background: var(--from);
-  }
+  html, body { width: 400px; height: 300px; overflow: hidden; }
+  body { font-family: 'Rubik', sans-serif; }
 
-  /* Fond : dégradé de la famille + halos + grille du hero du site */
-  .bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(55% 65% at 88% 8%, color-mix(in srgb, var(--accent) 42%, transparent), transparent 72%),
-      radial-gradient(60% 70% at 0% 100%, color-mix(in srgb, var(--to) 85%, transparent), transparent 70%),
-      linear-gradient(140deg, var(--from) 10%, var(--to) 120%);
-  }
-  .grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
-    background-size: 50px 50px; background-position: -1px -1px;
-    -webkit-mask-image: radial-gradient(65% 70% at 50% 50%, #000 25%, transparent 85%);
-  }
-  .watermark {
-    position: absolute; right: -110px; bottom: -150px; width: 560px; height: 560px;
-    color: #fff; opacity: .06; transform: rotate(-14deg);
-  }
-  .watermark svg, .icon svg { width: 100%; height: 100%; display: block; }
-
-  /* Carte « produit numérique » au centre */
-  .card { position: absolute; left: 220px; top: 210px; width: 760px; height: 480px; border-radius: 42px; }
-  .card.back {
-    background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 25%, var(--to)));
-    opacity: .5; transform: rotate(-8deg) translate(-30px, -36px);
-  }
-  .card.front {
-    background: linear-gradient(150deg, rgba(255,255,255,.24), rgba(255,255,255,.07) 60%, rgba(255,255,255,.04));
-    border: 1.5px solid rgba(255,255,255,.34);
-    box-shadow: 0 50px 90px -30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.45);
-    backdrop-filter: blur(20px);
-    padding: 52px 60px 50px; display: flex; flex-direction: column;
-  }
-  .top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .icon {
-    width: 104px; height: 104px; border-radius: 30px; padding: 26px;
-    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
-    color: color-mix(in srgb, var(--accent) 70%, #fff);
-  }
-  .brand { display: flex; align-items: center; gap: 12px; opacity: .95; }
-  .brand img { height: 50px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.35)); }
-  .brand span { font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 23px; letter-spacing: .02em; }
-
-  .code {
-    margin-top: auto; margin-bottom: 18px; display: flex; gap: 22px;
-    font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 22px; letter-spacing: .28em;
-    color: rgba(255,255,255,.42);
-  }
-  .title {
-    font-weight: 800; line-height: 1.02; letter-spacing: -.025em; max-width: 640px;
-    text-shadow: 0 4px 24px rgba(0,0,0,.25); overflow-wrap: anywhere; text-wrap: balance;
-  }
-  .bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 26px; height: 46px; }
-  .meta { display: flex; align-items: center; gap: 22px; }
-  .signature { display: flex; gap: 10px; }
-  .signature i { display: block; width: 70px; height: 10px; border-radius: 10px; }
+  .card { position: relative; width: 400px; height: 300px; overflow: hidden; background: var(--bg); color: var(--ink); }
+  .watermark { position: absolute; right: -46px; bottom: -58px; width: 230px; height: 230px; opacity: var(--wm); transform: rotate(-12deg); }
+  .sheen { position: absolute; inset: 0; background: linear-gradient(118deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 42%); }
+  /* Contenu ancré en bas : le haut reste libre pour les badges du site (promo, INSTANT) et le recadrage des vignettes */
+  .content { position: relative; height: 100%; padding: 24px 26px 30px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .logo { width: 54px; height: 54px; margin-bottom: 16px; filter: drop-shadow(0 4px 12px rgba(0,0,0,.25)); }
+  .tile { width: 54px; height: 54px; margin-bottom: 16px; border-radius: 15px; padding: 13px; background: var(--tile); box-shadow: inset 0 0 0 1px var(--edge); }
+  .tile .glyph { width: 28px; height: 28px; }
+  .glyph svg, .watermark svg, .logo svg { width: 100%; height: 100%; display: block; }
+  .mark { display: flex; align-items: center; gap: 6px; opacity: .92; }
+  .mark img { height: 22px; display: block; }
+  .mark span { font-family: 'Nunito Sans', sans-serif; font-weight: 900; font-size: 11px; letter-spacing: .1em; }
+  .label { font-family: 'Nunito Sans', sans-serif; font-weight: 800; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; opacity: .8; }
+  .brand { margin-top: 6px; font-weight: 800; line-height: 1.04; letter-spacing: -.02em; max-width: 270px; }
+  .foot { margin-top: 14px; height: 24px; display: flex; justify-content: space-between; align-items: center; }
+  .meta { display: flex; align-items: center; gap: 12px; }
+  .signature { display: flex; gap: 5px; }
+  .signature i { display: block; width: 26px; height: 4px; border-radius: 4px; }
   .signature i:first-child { background: linear-gradient(90deg, #7ee0c0, #4a7fc0); }
   .signature i:last-child { background: linear-gradient(90deg, #b0204a, #e8902a); }
-  .badge {
-    font-family: 'Nunito Sans', sans-serif; font-weight: 900; font-size: 26px; letter-spacing: .03em;
-    padding: 8px 22px; border-radius: 999px; background: #fff; color: var(--from);
-  }
-  .badge:empty { display: none; }
+  .badge { font-family: 'Nunito Sans', sans-serif; font-weight: 900; font-size: 12px; padding: 4px 11px; border-radius: 999px; background: var(--ink); color: var(--bg1); }
+  .badge:empty, [hidden] { display: none; }
 </style>
 </head>
 <body>
-  <div class="bg"></div>
-  <div class="grid"></div>
-  <div class="watermark" id="watermark"></div>
-  <div class="card back"></div>
-  <div class="card front">
-    <div class="top">
-      <div class="icon" id="icon"></div>
-    </div>
-    <div class="code"><span>••••</span><span>••••</span><span>••••</span><span>••••</span></div>
-    <div class="title" id="title"></div>
-    <div class="bottom">
-      <div class="meta"><div class="signature"><i></i><i></i></div><div class="badge" id="badge"></div></div>
-      <div class="brand"><img src="../../assets/images/logo-soft4dz.png" alt=""><span>SOFT4DZ</span></div>
+  <div class="card" id="card">
+    <div class="watermark" id="watermark"></div>
+    <div class="sheen"></div>
+    <div class="content">
+      <div class="logo" id="logo"></div>
+      <div class="tile" id="tile"><div class="glyph" id="tileGlyph"></div></div>
+      <div class="label" id="label"></div>
+      <div class="brand" id="brand"></div>
+      <div class="foot">
+        <div class="meta"><div class="signature"><i></i><i></i></div><span class="badge" id="badge"></span></div>
+        <div class="mark"><img src="../../assets/images/logo-soft4dz.png" alt=""><span>SOFT4DZ</span></div>
+      </div>
     </div>
   </div>
 <script>
-  /** Appelé par generate.mjs pour chaque produit. */
-  window.render = async ({ title, badge, palette, iconSvg }) => {
-    const s = document.body.style;
-    s.setProperty('--from', palette.from);
-    s.setProperty('--to', palette.to);
-    s.setProperty('--accent', palette.accent);
-    document.getElementById('icon').innerHTML = iconSvg;
-    document.getElementById('watermark').innerHTML = iconSvg;
-    document.getElementById('badge').textContent = badge || '';
+  /** Appelé par generate.mjs : mêmes règles que renderVals() de Card.dc.html. */
+  window.render = async ({ brand, label, bg, ink, glyphSvg, logo, badge }) => {
+    const light = ink.toLowerCase() !== '#ffffff';
+    const s = document.getElementById('card').style;
+    s.setProperty('--bg', `linear-gradient(135deg, ${bg[0]} 0%, ${bg[1]} 100%)`);
+    s.setProperty('--bg1', bg[0]);
+    s.setProperty('--ink', ink);
+    s.setProperty('--wm', light ? .08 : (logo ? .14 : .1));
+    s.setProperty('--tile', light ? 'rgba(0,0,0,.06)' : 'rgba(255,255,255,.14)');
+    s.setProperty('--edge', light ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.16)');
 
-    // Titre : une seule ligne si elle tient en grand, sinon 2 lignes maximum
-    const el = document.getElementById('title');
-    el.textContent = title;
-    await document.fonts.ready;
-    const card = document.querySelector('.card.front');
-    const fits = (size, maxLines) => {
-      el.style.fontSize = size + 'px';
-      return el.scrollWidth <= 640
-        && Math.round(el.scrollHeight / (size * 1.02)) <= maxLines
-        && card.scrollHeight <= card.clientHeight;
-    };
-    el.style.whiteSpace = 'nowrap';
-    let size = 112;
-    while (size > 90 && !fits(size, 1)) size -= 2;
-    if (!fits(size, 1)) {
-      el.style.whiteSpace = 'normal';
-      size = 104;
-      while (size > 48 && !fits(size, 2)) size -= 2;
+    document.getElementById('watermark').innerHTML = glyphSvg;
+    const logoEl = document.getElementById('logo');
+    logoEl.innerHTML = logo ? glyphSvg : '';
+    logoEl.hidden = !logo; // visible avant la mesure : getBBox() vaut 0 sur un élément masqué
+    if (logo) {
+      // Recadrage au plus juste puis taille « optique » : même surface quelle que soit la forme du logo
+      const svg = logoEl.querySelector('svg');
+      const bb = svg.getBBox();
+      svg.setAttribute('viewBox', `${bb.x} ${bb.y} ${bb.width} ${bb.height}`);
+      const ratio = bb.width / bb.height;
+      let h = Math.min(50, Math.sqrt(2400 / ratio));
+      let w = h * ratio;
+      if (w > 150) { w = 150; h = w / ratio; }
+      logoEl.style.width = w + 'px';
+      logoEl.style.height = h + 'px';
     }
+    document.getElementById('tileGlyph').innerHTML = logo ? '' : glyphSvg;
+    document.getElementById('tile').hidden = logo;
+    document.getElementById('label').textContent = label;
+    document.getElementById('badge').textContent = badge || '';
+    const el = document.getElementById('brand');
+    el.textContent = brand;
+    const len = brand.length;
+    el.style.fontSize = (len <= 9 ? 34 : len <= 12 ? 30 : len <= 15 ? 27 : 25) + 'px';
+    await document.fonts.ready;
   };
 </script>
 </body>
