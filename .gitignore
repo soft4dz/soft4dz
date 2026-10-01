@@ -1,0 +1,19 @@
+# Environnement — contient des secrets, ne jamais committer
+.env
+.env.*
+!.env.example
+
+# Contenu généré à l'exécution
+uploads/*
+!uploads/.gitkeep
+!uploads/*/.htaccess
+
+# Outils / éditeurs locaux
+.claude/settings.local.json
+tools/qa-report.json
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+.DS_Store

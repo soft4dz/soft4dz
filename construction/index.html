@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<!--
+  SOFT4DZ — Page « Site en construction »
+  ─────────────────────────────────────
+  MODIFIER FACILEMENT :
+  • Logo      → assets/img/logo-soft4dz.png
+  • WhatsApp  → lien btn WhatsApp (CONFIG.links.whatsapp)
+  • Facebook  → lien btn Facebook
+  • Réseaux   → section CONFIG.links (instagram, tiktok)
+  • Textes    → section CONFIG.texts dans le script en bas de page
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOFT4DZ — Site en construction</title>
+  <meta name="description" content="SOFT4DZ — Plateforme digitale algérienne : Windows, Office, abonnements, sites web et logiciels sur mesure. Ouverture imminente.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f8faff">
+  <link rel="icon" href="assets/img/logo-soft4dz.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- Fond décoratif -->
+  <div class="bg" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb--1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb--2" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb--3" aria-hidden="true"></div>
+  <canvas id="particles" aria-hidden="true"></canvas>
+  <svg class="bg-wave" viewBox="0 0 1440 280" preserveAspectRatio="none" aria-hidden="true">
+    <path fill="url(#waveGrad)" d="M0,160 C360,260 720,60 1080,140 C1260,180 1380,200 1440,160 L1440,280 L0,280 Z"/>
+    <defs>
+      <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.15"/>
+        <stop offset="50%" stop-color="#0056ff" stop-opacity="0.1"/>
+        <stop offset="100%" stop-color="#ec4899" stop-opacity="0.12"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="page">
+    <div class="container">
+
+      <!-- 1. Logo -->
+      <header class="header">
+        <img
+          src="assets/img/logo-soft4dz.png"
+          alt="SOFT4DZ — Solutions digitales"
+          class="logo"
+          width="280"
+          height="88"
+          loading="eager"
+          decoding="async"
+        >
+      </header>
+
+      <!-- 2 & 3. Titre + sous-titre -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="badge">
+          <span class="badge-dot" aria-hidden="true"></span>
+          Ouverture prochaine
+        </div>
+        <h1 id="hero-title" class="hero-title">Le site SOFT4DZ arrive bientôt</h1>
+        <p class="hero-subtitle">
+          Votre plateforme digitale pour logiciels, abonnements, sites web et solutions sur mesure.
+        </p>
+        <!-- 7. Phrase rassurante -->
+        <p class="hero-note">
+          Nous préparons une expérience simple, rapide et fiable pour vos besoins digitaux.
+        </p>
+      </section>
+
+      <!-- 4. Services -->
+      <section class="services" aria-labelledby="services-title">
+        <h2 id="services-title" class="services-title">Nos domaines d'expertise</h2>
+        <div class="services-grid">
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">🪟</span>
+            <span class="service-label">Windows &amp; Office</span>
+          </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">📱</span>
+            <span class="service-label">Abonnements numériques</span>
+          </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">🌐</span>
+            <span class="service-label">Création de sites web</span>
+          </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">⚙️</span>
+            <span class="service-label">Logiciels sur mesure</span>
+          </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">💻</span>
+            <span class="service-label">Applications web</span>
+          </article>
+          <article class="service-card">
+            <span class="service-icon" aria-hidden="true">🛡️</span>
+            <span class="service-label">Maintenance &amp; accompagnement digital</span>
+          </article>
+        </div>
+      </section>
+
+      <!-- 5 & 6. Boutons CTA -->
+      <div class="actions">
+        <a id="btn-whatsapp" class="btn btn-whatsapp" href="https://wa.me/213XXXXXXXXX" target="_blank" rel="noopener noreferrer">
+          <span class="btn-icon" aria-hidden="true">💬</span>
+          Nous contacter sur WhatsApp
+        </a>
+        <a id="btn-facebook" class="btn btn-facebook" href="https://facebook.com/soft4dz" target="_blank" rel="noopener noreferrer">
+          <span class="btn-icon" aria-hidden="true">📘</span>
+          Suivez-nous sur Facebook
+        </a>
+      </div>
+
+      <!-- Réseaux sociaux -->
+      <nav class="social" aria-label="Réseaux sociaux">
+        <a id="link-instagram" class="social-link" href="https://instagram.com/soft4dz" target="_blank" rel="noopener noreferrer" title="Instagram">📷</a>
+        <a id="link-tiktok" class="social-link" href="https://tiktok.com/@soft4dz" target="_blank" rel="noopener noreferrer" title="TikTok">🎵</a>
+      </nav>
+
+    </div>
+
+    <!-- 8. Footer -->
+    <footer class="footer">
+      <p>&copy; 2026 SOFT4DZ. Tous droits réservés.</p>
+    </footer>
+  </div>
+
+  <script>
+  /**
+   * CONFIG — Modifiez ici les liens et textes sans toucher au HTML
+   */
+  var CONFIG = {
+    links: {
+      whatsapp:  'https://wa.me/213XXXXXXXXX',
+      facebook:  'https://facebook.com/soft4dz',
+      instagram: 'https://instagram.com/soft4dz',
+      tiktok:    'https://tiktok.com/@soft4dz'
+    }
+  };
+
+  document.getElementById('btn-whatsapp').href  = CONFIG.links.whatsapp;
+  document.getElementById('btn-facebook').href  = CONFIG.links.facebook;
+  document.getElementById('link-instagram').href = CONFIG.links.instagram;
+  document.getElementById('link-tiktok').href    = CONFIG.links.tiktok;
+
+  /**
+   * Particules légères (canvas) — désactivées si prefers-reduced-motion
+   */
+  (function initParticles() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var canvas = document.getElementById('particles');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dots = [];
+    var colors = ['#00d2ff', '#0056ff', '#f97316', '#ec4899'];
+    var count = window.innerWidth < 520 ? 28 : 48;
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    function createDots() {
+      dots = [];
+      for (var i = 0; i < count; i++) {
+        dots.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 2 + 0.8,
+          dx: (Math.random() - 0.5) * 0.35,
+          dy: (Math.random() - 0.5) * 0.35,
+          c: colors[Math.floor(Math.random() * colors.length)],
+          o: Math.random() * 0.35 + 0.15
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach(function (d) {
+        d.x += d.dx;
+        d.y += d.dy;
+        if (d.x < 0) d.x = canvas.width;
+        if (d.x > canvas.width) d.x = 0;
+        if (d.y < 0) d.y = canvas.height;
+        if (d.y > canvas.height) d.y = 0;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = d.c;
+        ctx.globalAlpha = d.o;
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    createDots();
+    draw();
+    window.addEventListener('resize', function () { resize(); createDots(); });
+  })();
+  </script>
+</body>
+</html>
