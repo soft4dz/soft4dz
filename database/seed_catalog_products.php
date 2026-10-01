@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /**
  * Ajoute les produits catalogue manquants (titres conseillés).
  * Usage : php database/seed_catalog_products.php

@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /**
  * Ajoute le type de sortie top_up aux produits.
  * Usage : php database/migrate_product_top_up.php

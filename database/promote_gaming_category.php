@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /**
  * Promeut la catégorie Gaming en rubrique principale (top-level).
  * Usage : php database/promote_gaming_category.php

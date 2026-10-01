@@ -114,6 +114,7 @@ uploadBtn?.addEventListener('click', () => {
   const fd = new FormData();
   fd.append('order_id', '<?= $order['id'] ?>');
   fd.append('proof', proofFile.files[0]);
+  fd.append('_csrf', '<?= e(csrf_token()) ?>');
   uploadBtn.textContent = 'Envoi...';
   fetch('<?= url('checkout/upload-proof') ?>', { method: 'POST', body: fd })
     .then(r => r.json())

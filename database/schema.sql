@@ -358,9 +358,10 @@ CREATE TABLE `vendor_profiles` (
 -- SEED DATA
 -- ============================================================
 
--- Admin user (mot de passe par défaut : changez-le immédiatement après la première connexion)
+-- Admin user — sans mot de passe : la connexion est impossible tant qu'il n'est pas défini
+-- (database/install.php en génère un aléatoire, ou : php database/fix_admin_password.php)
 INSERT INTO `users` (`name`, `email`, `password_hash`, `role`, `status`, `email_verified_at`) VALUES
-('Admin Soft4dz', 'admin@soft4dz.com', '$argon2id$v=19$m=65536,t=4,p=1$ajRoMWwuRi9iVTIxUzliLg$42kbbvsY082gOAaPfkiViBnZQnlHP8d6ROt9GjcK2QQ', 'admin', 'active', NOW());
+('Admin Soft4dz', 'admin@soft4dz.com', NULL, 'admin', 'active', NOW());
 
 -- Categories
 INSERT INTO `categories` (`name`, `slug`, `description`, `icon`, `sort_order`) VALUES

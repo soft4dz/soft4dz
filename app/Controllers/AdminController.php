@@ -507,19 +507,54 @@ class AdminController extends Controller {
             $this->json(['success' => false], 404);
         }
 
-        $checkout = new CheckoutController();
-        $checkout->deliverOrder((int)$id);
+        $delivery = (new CheckoutController())->deliverOrder((int)$id);
+        if (!$delivery['found']) {
+            setFlash('error', 'Commande annulée ou remboursée : paiement non validé.');
+            $this->redirect('/admin/orders/' . $id);
+        }
 
-        $this->db->insert('notifications', [
-            'user_id' => $order['user_id'],
-            'type'    => 'payment_confirmed',
-            'title'   => 'Paiement confirmé',
-            'body'    => "Votre commande {$order['order_number']} a été confirmée.",
-            'url'     => '/dashboard/orders/' . $id,
-        ]);
+        if ($delivery['newly_paid']) {
+            $this->db->insert('notifications', [
+                'user_id' => $order['user_id'],
+                'type'    => 'payment_confirmed',
+                'title'   => 'Paiement confirmé',
+                'body'    => "Votre commande {$order['order_number']} a été confirmée.",
+                'url'     => '/dashboard/orders/' . $id,
+            ]);
+        }
 
-        setFlash('success', 'Paiement validé.');
+        $message = $delivery['newly_paid'] ? 'Paiement validé.' : 'Commande déjà payée.';
+        if ($delivery['delivered'] > 0) {
+            $message .= " {$delivery['delivered']} article(s) livré(s).";
+        }
+        if ($delivery['pending'] > 0) {
+            $message .= " {$delivery['pending']} article(s) en attente (clés insuffisantes ou livraison manuelle) : ajoutez les clés puis validez à nouveau.";
+        }
+        setFlash($delivery['pending'] > 0 ? 'error' : 'success', $message);
         $this->redirect('/admin/orders/' . $id);
+    }
+
+    /** Justificatif de paiement : servi uniquement aux admins (le dossier uploads/proofs n'est pas public). */
+    public function paymentProof(string $id): void {
+        $order = $this->db->fetch('SELECT payment_proof FROM orders WHERE id = ?', [(int)$id]);
+        $file  = basename((string)($order['payment_proof'] ?? ''));
+        $path  = UPLOAD_PATH . 'proofs/' . $file;
+        if ($file === '' || !is_file($path)) {
+            $this->abort(404);
+        }
+        $mime = match (strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
+            'pdf'   => 'application/pdf',
+            'png'   => 'image/png',
+            'webp'  => 'image/webp',
+            'gif'   => 'image/gif',
+            default => 'image/jpeg',
+        };
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . (string) filesize($path));
+        header('Content-Disposition: inline; filename="' . $file . '"');
+        header('Cache-Control: private, no-store');
+        readfile($path);
+        exit;
     }
 
     public function updateOrderStatus(string $id): void {

@@ -29,7 +29,14 @@ define('APP_ENV', env('APP_ENV', 'production'));
 define('APP_URL', env('APP_URL', 'http://localhost/soft4dz'));
 /** Chemin URL de l’app (ex. /soft4dz) pour comparaisons REQUEST_URI — sans slash final */
 define('BASE_URL', rtrim((string) (parse_url(APP_URL, PHP_URL_PATH) ?: ''), '/') ?: '');
-define('APP_SECRET', env('APP_SECRET', 'changeme'));
+define('APP_SECRET', (string) env('APP_SECRET', ''));
+// APP_SECRET signe les liens de téléchargement des tickets (clés de licence) : une valeur connue permet de les forger.
+if (APP_ENV === 'production' && PHP_SAPI !== 'cli'
+    && (strlen(APP_SECRET) < 32 || in_array(APP_SECRET, ['changeme', 'change_this_secret_key_in_production_32chars'], true))) {
+    error_log('Soft4dz: APP_SECRET absent ou faible — démarrage refusé.');
+    http_response_code(500);
+    exit('Configuration invalide : définissez APP_SECRET (32 caractères aléatoires minimum) dans le fichier .env.');
+}
 define('ROOT_PATH', dirname(__DIR__));
 define('VIEWS_PATH', ROOT_PATH . '/views');
 define('ASSETS_URL', APP_URL . '/assets');

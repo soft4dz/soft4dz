@@ -1,6 +1,7 @@
 <?php
 /** Remplace un fichier sur cPanel via save_file_content */
 declare(strict_types=1);
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 
 $host = 'soft4dz.com';
 $port = 2083;

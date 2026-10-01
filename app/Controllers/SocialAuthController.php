@@ -56,6 +56,7 @@ class SocialAuthController extends Controller {
         }
 
         Auth::login($user);
+        (new CartController())->mergeGuestCart();
         $redirect = $_SESSION['intended'] ?? ($user['role'] === 'admin' ? '/admin' : '/dashboard');
         unset($_SESSION['intended']);
         $this->redirect($redirect);

@@ -3,8 +3,31 @@
 namespace App\Core;
 
 class Router {
+    /** Routes appelées serveur-à-serveur, authentifiées autrement (signature HMAC). */
+    private const CSRF_EXEMPT = ['/webhook/chargily'];
+
     private array $routes = [];
     private array $middlewares = [];
+
+    /** Jeton CSRF : champ `_csrf` des formulaires ou en-tête X-CSRF-Token des appels fetch. */
+    private function hasValidCsrfToken(): bool {
+        $token = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        return is_string($token) && $token !== '' && Auth::verifyCsrf($token);
+    }
+
+    private function rejectCsrf(): never {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        if (!str_contains($accept, 'text/html')) {
+            http_response_code(403);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['success' => false, 'message' => 'Session expirée, rechargez la page.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        setFlash('error', 'Session expirée ou requête invalide. Veuillez réessayer.');
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        header('Location: ' . (str_starts_with($referer, APP_URL . '/') ? $referer : APP_URL . '/'), true, 303);
+        exit;
+    }
 
     public function get(string $path, array|callable $handler, array $middleware = []): void {
         $this->addRoute('GET', $path, $handler, $middleware);
@@ -33,6 +56,10 @@ class Router {
         $base = parse_url(APP_URL, PHP_URL_PATH) ?? '';
         $uri  = '/' . ltrim(substr($uri, strlen($base)), '/');
         $uri  = strtok($uri, '?') ?: '/';
+
+        if (strtoupper($method) !== 'GET' && !in_array($uri, self::CSRF_EXEMPT, true) && !$this->hasValidCsrfToken()) {
+            $this->rejectCsrf();
+        }
 
         foreach ($this->routes as $route) {
             if ($route['method'] !== strtoupper($method)) continue;

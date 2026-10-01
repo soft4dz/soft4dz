@@ -7,15 +7,23 @@ AddDefaultCharset UTF-8
 
 RewriteEngine On
 
-# Block access to sensitive files
-RewriteRule ^\.env$ - [F,L]
-RewriteRule ^composer\.json$ - [F,L]
-RewriteRule ^composer\.lock$ - [F,L]
+# Validation SSL (AutoSSL / Let's Encrypt)
+RewriteRule ^\.well-known/ - [L]
 
-# Allow direct access to assets
-RewriteCond %{REQUEST_URI} ^/soft4dz/assets/ [OR]
-RewriteCond %{REQUEST_URI} ^/soft4dz/uploads/
-RewriteRule ^ - [L]
+# Fichiers cachés (.env, .git, .htaccess, .agents, .cursor…) : interdits
+RewriteRule (^|/)\. - [F,L]
+
+# Code, configuration, scripts de maintenance et vues : jamais servis directement
+RewriteRule ^(app|config|database|tools|views|design-system)(/|$) - [F,L]
+# lang/ : /lang/{locale} est une route de l'application, seuls les fichiers de traduction sont interdits
+RewriteRule ^lang/.+\.php$ - [F,L]
+RewriteRule \.(sql|md|lock|json|mjs|py|csv|log|ini|sh)$ - [F,L]
+
+# Tickets PDF (clés de licence) et justificatifs de paiement : uniquement via l'application
+RewriteRule ^uploads/(tickets|proofs)(/|$) - [F,L]
+
+# Fichiers statiques
+RewriteRule ^(assets|uploads)/ - [L]
 
 # Route everything else through index.php
 RewriteCond %{REQUEST_FILENAME} !-f

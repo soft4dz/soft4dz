@@ -6,6 +6,7 @@
   (function(){try{var t=(localStorage.getItem('soft4dz_theme')||'').trim().toLowerCase();if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);document.addEventListener('DOMContentLoaded',function(){if(document.body)document.body.setAttribute('data-theme',t);});}catch(e){}})();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
   <title><?= e($pageTitle ?? 'Admin') ?> — <?= APP_NAME ?> Admin</title>
   <meta name="theme-color" id="metaThemeColor" content="#0B1220">
   <link rel="preconnect" href="https://fonts.googleapis.com">

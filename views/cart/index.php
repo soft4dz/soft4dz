@@ -28,14 +28,14 @@
               <div style="font-size:0.8rem;color:var(--text-muted)"><?= formatPrice($item['unit_price'] ?? $item['price']) ?> / unité</div>
             </div>
             <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0">
-              <button class="btn btn-outline btn-sm qty-btn" data-id="<?= $item['id'] ?>" data-action="minus" style="width:30px;height:30px;padding:0">−</button>
+              <button class="btn btn-outline btn-sm qty-btn" data-id="<?= (int) $item['product_id'] ?>" data-action="minus" style="width:30px;height:30px;padding:0">−</button>
               <span style="font-weight:700;min-width:24px;text-align:center"><?= $item['quantity'] ?></span>
-              <button class="btn btn-outline btn-sm qty-btn" data-id="<?= $item['id'] ?>" data-action="plus" style="width:30px;height:30px;padding:0">+</button>
+              <button class="btn btn-outline btn-sm qty-btn" data-id="<?= (int) $item['product_id'] ?>" data-action="plus" style="width:30px;height:30px;padding:0">+</button>
             </div>
             <div style="font-weight:800;min-width:100px;text-align:right;flex-shrink:0">
               <?= formatPrice(($item['unit_price'] ?? $item['price']) * $item['quantity']) ?>
             </div>
-            <button class="btn btn-ghost btn-sm remove-item" data-id="<?= $item['id'] ?>" style="color:var(--danger);padding:0.25rem">
+            <button class="btn btn-ghost btn-sm remove-item" data-id="<?= (int) $item['product_id'] ?>" style="color:var(--danger);padding:0.25rem">
               <i class="bi bi-trash3"></i>
             </button>
           </div>
@@ -119,7 +119,7 @@ document.querySelectorAll('.qty-btn').forEach(btn => {
     fetch('<?= url('cart/update') ?>', {
       method:'POST',
       headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body: new URLSearchParams({product_id:id, qty:newQty})
+      body: new URLSearchParams({product_id:id, qty:newQty, _csrf:'<?= e(csrf_token()) ?>'})
     }).then(() => location.reload());
   });
 });
@@ -129,7 +129,7 @@ document.querySelectorAll('.remove-item').forEach(btn => {
     fetch('<?= url('cart/remove') ?>', {
       method:'POST',
       headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body: new URLSearchParams({product_id:btn.dataset.id})
+      body: new URLSearchParams({product_id:btn.dataset.id, _csrf:'<?= e(csrf_token()) ?>'})
     }).then(() => location.reload());
   });
 });
@@ -139,7 +139,7 @@ document.getElementById('applyCoupon')?.addEventListener('click', () => {
   fetch('<?= url('cart/coupon') ?>', {
     method:'POST',
     headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body: new URLSearchParams({code})
+    body: new URLSearchParams({code, _csrf:'<?= e(csrf_token()) ?>'})
   }).then(r=>r.json()).then(d => {
     if (d.success) location.reload();
     else alert(d.message);

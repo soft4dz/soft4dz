@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 chdir(dirname(__DIR__));
 require 'config/config.php';
 $cfg = require 'config/database.php';

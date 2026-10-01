@@ -6,7 +6,8 @@
 
 const I18N = typeof window.__I18N === 'object' && window.__I18N !== null ? window.__I18N : {};
 const BASE_URL = (window.__BASE_URL || '').replace(/\/+$/, '');
-const CSRF_TOKEN_GLOBAL = window.__CSRF || document.querySelector('input[name="_csrf"]')?.value || '';
+const CSRF_TOKEN_GLOBAL = document.querySelector('meta[name="csrf-token"]')?.content
+  || window.__CSRF || document.querySelector('input[name="_csrf"]')?.value || '';
 
 function toUrl(path) {
   const cleanPath = String(path || '').replace(/^\/+/, '');
@@ -149,7 +150,6 @@ function toUrl(path) {
 
 // ── ADD TO CART ────────────────────────────────────────────
 (function () {
-  const CSRF_TOKEN = document.querySelector('input[name="_csrf"]')?.value || '';
 
   function showToast(message, type = 'success') {
     const old = document.getElementById('cartToast');
@@ -198,7 +198,7 @@ function toUrl(path) {
       const res = await fetch(toUrl('cart/add'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ product_id: productId, qty, _csrf: CSRF_TOKEN }),
+        body: new URLSearchParams({ product_id: productId, qty, _csrf: CSRF_TOKEN_GLOBAL }),
       });
       const data = await res.json();
 
@@ -290,7 +290,7 @@ function toUrl(path) {
       const res  = await fetch(toUrl('api/ai/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ message: text }),
+        body: new URLSearchParams({ message: text, _csrf: CSRF_TOKEN_GLOBAL }),
       });
       const data = await res.json();
       typing.textContent = data.reply || I18N.chat_fallback || '';

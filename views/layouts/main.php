@@ -6,6 +6,7 @@
   (function(){try{var t=(localStorage.getItem('soft4dz_theme')||'').trim().toLowerCase();if(t!=='light'&&t!=='dark')t='light';document.documentElement.setAttribute('data-theme',t);document.addEventListener('DOMContentLoaded',function(){if(document.body)document.body.setAttribute('data-theme',t);});}catch(e){}})();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
   <title><?= e($pageTitle ?? APP_NAME) ?> — <?= APP_NAME ?></title>
   <meta name="description" content="<?= e($pageDesc ?? __('meta.description_default')) ?>">
   <meta name="theme-color" id="metaThemeColor" content="#F8FAFC">
@@ -389,7 +390,7 @@ window.__I18N = <?= json_encode([
     'confirm_default'       => __('js.confirm_default'),
 ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 window.__BASE_URL = '<?= BASE_URL ?>';
-window.__CSRF    = '<?= $_SESSION['_csrf_token'] ?? '' ?>';
+window.__CSRF    = '<?= e(csrf_token()) ?>';
 </script>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="<?= asset('js/app.js') ?>"></script>

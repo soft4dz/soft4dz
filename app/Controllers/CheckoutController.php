@@ -24,7 +24,7 @@ class CheckoutController extends Controller {
             $this->redirect('/cart');
         }
 
-        $coupon  = $_SESSION['coupon'] ?? null;
+        $coupon  = $cart->currentCoupon($items);
         $summary = $cart->calculateSummary($items, $coupon);
 
         $bankInfo = json_decode(
@@ -48,7 +48,12 @@ class CheckoutController extends Controller {
         $items   = $cart->getCartItems();
         if (empty($items)) $this->redirect('/cart');
 
-        $coupon  = $_SESSION['coupon'] ?? null;
+        $hadCoupon = !empty($_SESSION['coupon']);
+        $coupon    = $cart->currentCoupon($items);
+        if ($hadCoupon && !$coupon) {
+            setFlash('error', "Votre code promo n'est plus valable : vérifiez le nouveau total avant de confirmer.");
+            $this->redirect('/checkout');
+        }
         $summary = $cart->calculateSummary($items, $coupon);
         $method  = $this->input('payment_method', 'bank_transfer');
         $notes   = trim($this->input('notes', ''));
@@ -70,6 +75,21 @@ class CheckoutController extends Controller {
 
         $this->db->beginTransaction();
         try {
+            if ($coupon) {
+                // Réservation atomique : deux commandes simultanées ne peuvent pas dépasser max_uses
+                $reserved = $this->db->query(
+                    "UPDATE coupons SET used_count = used_count + 1
+                     WHERE id = ? AND is_active = 1 AND (max_uses IS NULL OR used_count < max_uses)",
+                    [$coupon['id']]
+                )->rowCount();
+                if ($reserved === 0) {
+                    $this->db->rollback();
+                    unset($_SESSION['coupon']);
+                    setFlash('error', "Ce code promo n'est plus disponible. Vérifiez le total avant de confirmer.");
+                    $this->redirect('/cart');
+                }
+            }
+
             $orderId = $this->db->insert('orders', [
                 'order_number'   => $orderNumber,
                 'user_id'        => Auth::id(),
@@ -88,16 +108,15 @@ class CheckoutController extends Controller {
             foreach ($items as $item) {
                 $this->db->insert('order_items', [
                     'order_id'    => $orderId,
-                    'product_id'  => $item['id'],
+                    'product_id'  => $item['product_id'],
                     'product_name'=> $item['name'],
                     'quantity'    => $item['quantity'],
                     'price'       => $item['unit_price'] ?? $item['price'],
                     'subtotal'    => ($item['unit_price'] ?? $item['price']) * $item['quantity'],
                 ]);
-                // Update product stock & sales
                 $this->db->query(
                     "UPDATE products SET sales_count = sales_count + ? WHERE id = ?",
-                    [$item['quantity'], $item['id']]
+                    [$item['quantity'], $item['product_id']]
                 );
             }
 
@@ -111,56 +130,56 @@ class CheckoutController extends Controller {
 
             // Clear cart
             $this->db->delete('cart_items', 'user_id = ?', [Auth::id()]);
-            if ($coupon) {
-                $this->db->query("UPDATE coupons SET used_count = used_count + 1 WHERE id = ?", [$coupon['id']]);
-            }
 
             $this->db->commit();
-            unset($_SESSION['cart'], $_SESSION['coupon']);
-
-            if ($method === 'free' || (float) $summary['total'] <= 0) {
-                $this->deliverOrder((int) $orderId);
-                $this->redirect('/checkout/success/' . $orderId);
-            }
-
-            if ($method === 'chargily') {
-                $amountDzd = (int) max(1, (int) round((float) $summary['total']));
-                $base      = rtrim(APP_URL, '/');
-                $successU  = $base . '/checkout/chargily-return?order=' . (int) $orderId;
-                $failureU  = $base . '/checkout/chargily-return?order=' . (int) $orderId . '&status=failed';
-                $webhookU  = $base . '/webhook/chargily';
-
-                $cp = ChargilyPayService::createCheckout(
-                    $amountDzd,
-                    $successU,
-                    $failureU,
-                    $webhookU,
-                    [
-                        'order_id'     => (string) $orderId,
-                        'order_number' => $orderNumber,
-                    ],
-                    'Commande ' . $orderNumber
-                );
-
-                if ($cp === null || empty($cp['checkout_url'])) {
-                    setFlash('error', 'Paiement en ligne indisponible pour le moment. Choisissez le virement ou réessayez plus tard. Votre commande est enregistrée (n° ' . $orderNumber . ').');
-                    $this->redirect('/dashboard/orders/' . $orderId);
-                }
-
-                $this->db->update('orders', [
-                    'payment_ref' => (string) ($cp['id'] ?? ''),
-                ], 'id = ?', ['id' => (int) $orderId]);
-
-                header('Location: ' . $cp['checkout_url']);
-                exit;
-            }
-
-            $this->redirect('/checkout/success/' . $orderId);
         } catch (\Throwable $e) {
             $this->db->rollback();
+            error_log('Checkout failed: ' . $e->getMessage());
             setFlash('error', 'Erreur lors de la commande. Réessayez.');
             $this->redirect('/checkout');
         }
+
+        // La commande est enregistrée : les étapes suivantes ne doivent plus tenter de rollback.
+        unset($_SESSION['cart'], $_SESSION['coupon']);
+
+        if ((float) $summary['total'] <= 0) {
+            $this->deliverOrder((int) $orderId);
+            $this->redirect('/checkout/success/' . $orderId);
+        }
+
+        if ($method === 'chargily') {
+            $amountDzd = (int) max(1, (int) round((float) $summary['total']));
+            $base      = rtrim(APP_URL, '/');
+            $successU  = $base . '/checkout/chargily-return?order=' . (int) $orderId;
+            $failureU  = $base . '/checkout/chargily-return?order=' . (int) $orderId . '&status=failed';
+            $webhookU  = $base . '/webhook/chargily';
+
+            $cp = ChargilyPayService::createCheckout(
+                $amountDzd,
+                $successU,
+                $failureU,
+                $webhookU,
+                [
+                    'order_id'     => (string) $orderId,
+                    'order_number' => $orderNumber,
+                ],
+                'Commande ' . $orderNumber
+            );
+
+            if ($cp === null || empty($cp['checkout_url'])) {
+                setFlash('error', 'Paiement en ligne indisponible pour le moment. Choisissez le virement ou réessayez plus tard. Votre commande est enregistrée (n° ' . $orderNumber . ').');
+                $this->redirect('/dashboard/orders/' . $orderId);
+            }
+
+            $this->db->update('orders', [
+                'payment_ref' => (string) ($cp['id'] ?? ''),
+            ], 'id = ?', ['id' => (int) $orderId]);
+
+            header('Location: ' . $cp['checkout_url']);
+            exit;
+        }
+
+        $this->redirect('/checkout/success/' . $orderId);
     }
 
     public function success(string $orderId): void {
@@ -237,6 +256,9 @@ class CheckoutController extends Controller {
         if (!in_array($ext, $allowed)) {
             $this->json(['success' => false, 'message' => 'Format non supporté']);
         }
+        if (($_FILES['proof']['size'] ?? 0) > 5 * 1024 * 1024) {
+            $this->json(['success' => false, 'message' => 'Fichier trop volumineux (5 Mo maximum)']);
+        }
 
         $filename = 'proof_' . $orderId . '_' . time() . '.' . $ext;
         $destDir  = UPLOAD_PATH . 'proofs/';
@@ -247,22 +269,48 @@ class CheckoutController extends Controller {
         $this->json(['success' => true, 'message' => 'Justificatif envoyé. En attente de validation.']);
     }
 
-    public function deliverOrder(int $orderId): void {
-        $items = $this->db->fetchAll(
-            "SELECT oi.id, oi.product_id, oi.quantity FROM order_items oi WHERE oi.order_id = ?",
-            [$orderId]
-        );
-        foreach ($items as $item) {
-            $keys = $this->db->fetchAll(
-                "SELECT id, key_value FROM product_keys
-                 WHERE product_id = ? AND is_used = 0 LIMIT ?",
-                [$item['product_id'], $item['quantity']]
+    /**
+     * Marque la commande payée et attribue les clés aux articles pas encore livrés.
+     * Idempotent : un nouvel appel (double clic admin, webhook rejoué) ne livre que les articles
+     * restants et ne consomme jamais une clé deux fois. Commande « completed » seulement si tout est livré.
+     *
+     * @return array{found:bool,newly_paid:bool,delivered:int,pending:int}
+     */
+    public function deliverOrder(int $orderId): array {
+        $result = ['found' => false, 'newly_paid' => false, 'delivered' => 0, 'pending' => 0];
+
+        $this->db->beginTransaction();
+        try {
+            $order = $this->db->fetch(
+                'SELECT id, status, payment_status, paid_at FROM orders WHERE id = ? FOR UPDATE',
+                [$orderId]
             );
-            if ($keys) {
-                $deliveryData = implode("\n", array_column($keys, 'key_value'));
+            if (!$order || in_array($order['status'], ['cancelled', 'refunded'], true)) {
+                $this->db->rollback();
+                return $result;
+            }
+            $result['found']      = true;
+            $result['newly_paid'] = $order['payment_status'] !== 'paid';
+
+            $items = $this->db->fetchAll(
+                'SELECT id, product_id, quantity FROM order_items WHERE order_id = ? AND delivered = 0',
+                [$orderId]
+            );
+            foreach ($items as $item) {
+                $qty  = (int) $item['quantity'];
+                $keys = $item['product_id'] === null ? [] : $this->db->fetchAll(
+                    "SELECT id, key_value FROM product_keys
+                     WHERE product_id = ? AND is_used = 0 ORDER BY id LIMIT ? FOR UPDATE",
+                    [$item['product_id'], $qty]
+                );
+                if (count($keys) < $qty) {
+                    // Clés insuffisantes ou livraison manuelle : l'article reste à livrer
+                    $result['pending']++;
+                    continue;
+                }
                 $this->db->query(
                     "UPDATE order_items SET delivered = 1, delivered_at = NOW(), delivery_data = ? WHERE id = ?",
-                    [$deliveryData, $item['id']]
+                    [implode("\n", array_column($keys, 'key_value')), $item['id']]
                 );
                 foreach ($keys as $k) {
                     $this->db->query(
@@ -270,16 +318,34 @@ class CheckoutController extends Controller {
                         [$orderId, $k['id']]
                     );
                 }
+                $this->db->query(
+                    "UPDATE products SET stock = GREATEST(stock - ?, 0) WHERE id = ? AND stock IS NOT NULL",
+                    [$qty, $item['product_id']]
+                );
+                $result['delivered']++;
+            }
+
+            $this->db->update('orders', [
+                'status'         => $result['pending'] > 0 ? 'processing' : 'completed',
+                'payment_status' => 'paid',
+                'paid_at'        => $order['paid_at'] ?? date('Y-m-d H:i:s'),
+            ], 'id = ?', [$orderId]);
+            $this->db->commit();
+        } catch (\Throwable $e) {
+            $this->db->rollback();
+            throw $e;
+        }
+
+        // Ticket PDF → email + WhatsApp : au premier paiement, puis à chaque nouvelle livraison
+        if ($result['newly_paid'] || $result['delivered'] > 0) {
+            try {
+                (new \App\Services\OrderTicketService($this->db))->generateAndSend($orderId);
+            } catch (\Throwable $e) {
+                error_log('Order ticket send failed: ' . $e->getMessage());
             }
         }
-        $this->db->update('orders', ['status' => 'completed', 'payment_status' => 'paid', 'paid_at' => date('Y-m-d H:i:s')], 'id = ?', [$orderId]);
 
-        // Ticket PDF → email + WhatsApp
-        try {
-            (new \App\Services\OrderTicketService($this->db))->generateAndSend($orderId);
-        } catch (\Throwable $e) {
-            error_log('Order ticket send failed: ' . $e->getMessage());
-        }
+        return $result;
     }
 
     public function downloadTicket(string $id): void {

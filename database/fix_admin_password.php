@@ -1,16 +1,22 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /**
- * Réinitialise le mot de passe admin au mot de passe par défaut du schema.sql.
- * Changez-le immédiatement après connexion.
- * Usage : php database/fix_admin_password.php
+ * Définit le mot de passe du compte admin.
+ * Usage : php database/fix_admin_password.php [email] [mot_de_passe]
+ *   - email par défaut : admin@soft4dz.com
+ *   - sans mot de passe, un mot de passe aléatoire est généré et affiché une seule fois.
  */
 chdir(dirname(__DIR__));
 require_once 'config/config.php';
 $cfg = require 'config/database.php';
 
-$email = 'admin@soft4dz.com';
-$plain = 'ChangeMe@2026';
-$hash  = password_hash($plain, PASSWORD_ARGON2ID);
+$email = $argv[1] ?? 'admin@soft4dz.com';
+$plain = $argv[2] ?? rtrim(strtr(base64_encode(random_bytes(15)), '+/', '-_'), '=');
+if (strlen($plain) < 12) {
+    echo "Mot de passe trop court (12 caractères minimum).\n";
+    exit(1);
+}
+$hash = password_hash($plain, PASSWORD_ARGON2ID);
 
 try {
     $pdo = new PDO(
@@ -25,7 +31,8 @@ try {
         echo "Aucune ligne mise à jour : vérifiez que l'email admin est bien {$email}.\n";
         exit(1);
     }
-    echo "Mot de passe admin réinitialisé. Connexion : {$email} / {$plain}\n";
+    echo "Mot de passe admin défini. Connexion : {$email} / {$plain}\n";
+    echo "Conservez-le dans un gestionnaire de mots de passe : il ne sera plus affiché.\n";
 } catch (PDOException $e) {
     echo 'ERREUR : ' . $e->getMessage() . "\n";
     exit(1);

@@ -3,24 +3,29 @@
 namespace App\Core;
 
 class Auth {
+    /** Connecté ET compte toujours actif (un compte banni ou désactivé perd sa session). */
     public static function check(): bool {
-        return isset($_SESSION['user_id']);
+        return self::user() !== null;
     }
 
     public static function user(): ?array {
-        if (!self::check()) return null;
-        static $user = null;
-        if ($user === null) {
-            $user = Database::getInstance()->fetch(
+        if (empty($_SESSION['user_id'])) return null;
+        static $cache = [];
+        $id = (int) $_SESSION['user_id'];
+        if (!array_key_exists($id, $cache)) {
+            $cache[$id] = Database::getInstance()->fetch(
                 "SELECT id, name, email, role, avatar FROM users WHERE id = ? AND status = 'active'",
-                [$_SESSION['user_id']]
+                [$id]
             ) ?: null;
         }
-        return $user;
+        if ($cache[$id] === null) {
+            unset($_SESSION['user_id'], $_SESSION['user_role']);
+        }
+        return $cache[$id];
     }
 
     public static function id(): ?int {
-        return $_SESSION['user_id'] ?? null;
+        return self::check() ? (int) $_SESSION['user_id'] : null;
     }
 
     public static function role(): ?string {

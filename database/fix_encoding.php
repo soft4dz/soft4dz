@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /**
  * Corrige les textes UTF-8 endommagés (ex. « sécurité » → « s??curit?? »)
  * après import SQL sans connexion utf8mb4.

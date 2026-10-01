@@ -1,4 +1,31 @@
 <?php
+require_once __DIR__ . '/config/config.php';
+
+/*
+ * Installateur web — désactivé par défaut.
+ * Pour l'utiliser : définir SETUP_TOKEN (valeur aléatoire) dans .env puis ouvrir setup.php?token=VALEUR.
+ * Il se verrouille dès que la table `users` existe. Préférez la CLI : php database/install.php
+ */
+function setupIsLocked(): bool {
+    try {
+        $cfg = require __DIR__ . '/config/database.php';
+        $pdo = new PDO(
+            "mysql:host={$cfg['host']};port={$cfg['port']};dbname={$cfg['dbname']};charset={$cfg['charset']}",
+            $cfg['username'], $cfg['password'], $cfg['options']
+        );
+        return $pdo->query("SHOW TABLES LIKE 'users'")->fetchColumn() !== false;
+    } catch (PDOException) {
+        return false; // base absente : installation possible
+    }
+}
+
+$setupToken = (string) env('SETUP_TOKEN', '');
+$givenToken = (string) ($_GET['token'] ?? '');
+if ($setupToken === '' || strlen($setupToken) < 16 || !hash_equals($setupToken, $givenToken) || setupIsLocked()) {
+    http_response_code(404);
+    exit;
+}
+
 header('Content-Type: text/html; charset=UTF-8');
 ?>
 <!DOCTYPE html>
@@ -26,9 +53,8 @@ header('Content-Type: text/html; charset=UTF-8');
   <p style="color:#9090b0;margin-bottom:2rem">Installation de la base de données et vérification de l'environnement.</p>
 
 <?php
-require_once __DIR__ . '/config/config.php';
-
 $steps = [];
+$adminPassword = null;
 $hasErrors = false;
 
 // PHP version check
@@ -85,12 +111,15 @@ try {
         }
         $steps[] = ['ok', "✓ Schéma exécuté : $ok requêtes OK" . ($fail > 0 ? ", $fail avertissements" : '')];
 
-        // Check admin user
-        $admin = $pdo->query("SELECT id FROM users WHERE role='admin' LIMIT 1")->fetch();
-        if ($admin) {
-            $steps[] = ['ok', '✓ Compte admin créé (admin@soft4dz.com / ChangeMe@2026 — à changer immédiatement)'];
-        } else {
-            $steps[] = ['info', 'ℹ Créez un compte admin manuellement'];
+        // Admin : mot de passe aléatoire, affiché une seule fois
+        $admin = $pdo->query("SELECT id, password_hash FROM users WHERE role='admin' LIMIT 1")->fetch();
+        if ($admin && empty($admin['password_hash'])) {
+            $adminPassword = rtrim(strtr(base64_encode(random_bytes(15)), '+/', '-_'), '=');
+            $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+                ->execute([password_hash($adminPassword, PASSWORD_ARGON2ID), $admin['id']]);
+            $steps[] = ['ok', '✓ Compte admin créé (admin@soft4dz.com)'];
+        } elseif (!$admin) {
+            $steps[] = ['info', 'ℹ Créez un compte admin : php database/fix_admin_password.php'];
         }
     }
 
@@ -114,23 +143,25 @@ foreach ($steps as $step):
 <?php endforeach; ?>
 
 <?php if (!isset($_GET['install']) && !$hasErrors): ?>
-<a href="?install=1" class="btn">Lancer l'installation de la base de données →</a>
+<a href="?token=<?= htmlspecialchars(rawurlencode($givenToken)) ?>&amp;install=1" class="btn">Lancer l'installation de la base de données →</a>
 <?php elseif (isset($_GET['install'])): ?>
 <div style="margin-top:1.5rem;padding:1.25rem;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:12px">
   <div style="font-weight:700;margin-bottom:0.75rem;color:#9f67f5">🎉 Installation terminée !</div>
+  <?php if ($adminPassword !== null): ?>
   <div style="font-size:0.875rem;color:#9090b0;margin-bottom:0.5rem">Identifiants admin :</div>
   <code style="display:block;padding:0.75rem;background:#1c1c32;border-radius:8px;font-size:0.85rem">
     Email : admin@soft4dz.com<br>
-    Mot de passe : ChangeMe@2026
+    Mot de passe : <?= htmlspecialchars($adminPassword) ?>
   </code>
-  <div style="font-size:0.8rem;color:#f59e0b;margin-top:0.75rem">⚠ Changez ce mot de passe immédiatement après votre première connexion.</div>
+  <div style="font-size:0.8rem;color:#f59e0b;margin-top:0.75rem">⚠ Notez ce mot de passe maintenant : il ne sera plus jamais affiché.</div>
+  <?php endif; ?>
   <div style="display:flex;gap:0.75rem;margin-top:1rem">
     <a href="<?= APP_URL ?>" class="btn" style="font-size:0.875rem">Voir le site</a>
-    <a href="<?= APP_URL ?>/login" class="btn" style="font-size:0.875rem">Connexion admin</a>
+    <a href="<?= APP_URL ?>/admin/login" class="btn" style="font-size:0.875rem">Connexion admin</a>
   </div>
 </div>
 <div style="margin-top:1rem;padding:0.875rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:0.78rem;color:#f87171">
-  ⚠ Supprimez le fichier <strong>setup.php</strong> avant la mise en production !
+  ⚠ Supprimez le fichier <strong>setup.php</strong> et la variable <strong>SETUP_TOKEN</strong> du serveur.
 </div>
 <?php endif; ?>
 

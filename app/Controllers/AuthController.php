@@ -43,6 +43,7 @@ class AuthController extends Controller {
         }
 
         Auth::login($user);
+        (new CartController())->mergeGuestCart();
         $redirect = $_SESSION['intended'] ?? ($user['role'] === 'admin' ? '/admin' : '/dashboard');
         unset($_SESSION['intended']);
         $this->redirect($redirect);
@@ -120,6 +121,7 @@ class AuthController extends Controller {
 
         $user = $db->fetch("SELECT * FROM users WHERE id = ?", [$userId]);
         Auth::login($user);
+        (new CartController())->mergeGuestCart();
         setFlash('success', "Bienvenue sur Soft4dz, $name !");
         $this->redirect('/dashboard');
     }

@@ -118,6 +118,7 @@ $router->post('/admin/reviews/{id}/approve', [App\Controllers\AdminController::c
 $router->post('/admin/reviews/{id}/reject', [App\Controllers\AdminController::class, 'rejectReview']);
 $router->get('/admin/orders', [App\Controllers\AdminController::class, 'orders']);
 $router->get('/admin/orders/{id}', [App\Controllers\AdminController::class, 'orderDetail']);
+$router->get('/admin/orders/{id}/proof', [App\Controllers\AdminController::class, 'paymentProof']);
 $router->post('/admin/orders/{id}/validate', [App\Controllers\AdminController::class, 'validatePayment']);
 $router->post('/admin/orders/{id}/status', [App\Controllers\AdminController::class, 'updateOrderStatus']);
 $router->post('/admin/orders/{id}/resend-ticket', [App\Controllers\AdminController::class, 'resendTicket']);

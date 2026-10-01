@@ -6,6 +6,9 @@
 # Contenu généré à l'exécution
 uploads/*
 !uploads/.gitkeep
+!uploads/.htaccess
+!uploads/*/
+uploads/*/*
 !uploads/*/.htaccess
 
 # Outils / éditeurs locaux

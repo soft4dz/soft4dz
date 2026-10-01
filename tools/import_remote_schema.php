@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /** Import schema vers MySQL cPanel (usage unique). */
 chdir(dirname(__DIR__));
 require_once 'config/config.php';

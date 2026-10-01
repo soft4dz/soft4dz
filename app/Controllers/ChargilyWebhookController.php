@@ -89,7 +89,10 @@ class ChargilyWebhookController {
         }
 
         $checkout = new CheckoutController();
-        $checkout->deliverOrder((int) $order['id']);
+        $delivery = $checkout->deliverOrder((int) $order['id']);
+        if (!$delivery['newly_paid']) {
+            return; // webhook rejoué ou déjà validé par l'admin : pas de seconde notification
+        }
 
         $db->insert('notifications', [
             'user_id' => $order['user_id'],

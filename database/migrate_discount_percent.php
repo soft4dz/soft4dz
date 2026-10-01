@@ -1,4 +1,5 @@
 <?php
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; } // Script CLI uniquement : jamais exécutable via le web
 /**
  * One-shot: ajoute discount_percent aux produits si manquant.
  * Usage: php database/migrate_discount_percent.php

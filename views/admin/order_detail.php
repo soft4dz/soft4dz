@@ -50,7 +50,7 @@
       <h3 style="margin-bottom:1rem">Justificatif de paiement</h3>
       <?php
       $ext = pathinfo($order['payment_proof'], PATHINFO_EXTENSION);
-      $src = UPLOAD_URL . 'proofs/' . $order['payment_proof'];
+      $src = url('admin/orders/' . (int) $order['id'] . '/proof');
       ?>
       <?php if (in_array($ext, ['jpg','jpeg','png','webp','gif'], true)): ?>
         <img src="<?= $src ?>" alt="Preuve" style="max-width:100%;border-radius:var(--radius);border:1px solid var(--border)">
