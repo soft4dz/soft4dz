@@ -15,6 +15,8 @@ export type Settings = {
   autoDelivery: boolean;
   /** Seuil d'alerte de stock de clés */
   lowStock: number;
+  /** Mode site en construction / maintenance : redirige les visiteurs vers la page En construction */
+  maintenanceMode: boolean;
 };
 
 export const defaultSettings = (): Settings => ({
@@ -27,6 +29,7 @@ export const defaultSettings = (): Settings => ({
   announce: { fr: [], ar: [], en: [] },
   autoDelivery: true,
   lowStock: 3,
+  maintenanceMode: false,
 });
 
 export const getSettings = async () => ({ ...defaultSettings(), ...(await readJson<Partial<Settings>>("settings.json", () => ({}))) });
@@ -35,7 +38,8 @@ export const saveSettings = (patch: Partial<Settings>) =>
   updateJson<Partial<Settings>>("settings.json", () => ({}), (s) => ({ ...s, ...patch }));
 
 /** Données publiques transmises au navigateur (jamais de réglage interne). */
-export type PublicSettings = Pick<Settings, "whatsapp" | "phone" | "email" | "facebook" | "instagram" | "tiktok" | "announce">;
+export type PublicSettings = Pick<Settings, "whatsapp" | "phone" | "email" | "facebook" | "instagram" | "tiktok" | "announce" | "maintenanceMode">;
 export const publicSettings = (s: Settings): PublicSettings => ({
-  whatsapp: s.whatsapp, phone: s.phone, email: s.email, facebook: s.facebook, instagram: s.instagram, tiktok: s.tiktok, announce: s.announce,
+  whatsapp: s.whatsapp, phone: s.phone, email: s.email, facebook: s.facebook, instagram: s.instagram, tiktok: s.tiktok, announce: s.announce, maintenanceMode: s.maintenanceMode,
 });
+

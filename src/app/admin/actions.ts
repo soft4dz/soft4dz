@@ -284,6 +284,7 @@ export async function saveSettingsAction(_: { error?: string; ok?: boolean } | u
     announce: { fr: lines("announce_fr"), ar: lines("announce_ar"), en: lines("announce_en") },
     autoDelivery: form.get("autoDelivery") === "on",
     lowStock: Math.max(0, Math.min(100, Math.round(num(form, "lowStock") || 0))),
+    maintenanceMode: form.get("maintenanceMode") === "on",
   });
   await logAction("Paramètres modifiés");
   revalidatePath("/", "layout");
