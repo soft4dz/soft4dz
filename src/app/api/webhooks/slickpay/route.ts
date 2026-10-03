@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getOrders, updateOrder } from "@/lib/orders";
+import { listOrders, updateOrder } from "@/lib/orders";
 import { deliverFromStock } from "@/lib/fulfil";
 
 /*
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     // Retrouver la commande associée par son slickpayInvoiceId
-    const allOrders = await getOrders();
+    const allOrders = await listOrders();
     const order = allOrders.find((o) => String(o.slickpayInvoiceId) === String(invoiceId));
 
     if (order && order.status !== "paid" && order.status !== "delivered") {

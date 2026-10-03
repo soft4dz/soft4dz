@@ -25,7 +25,19 @@ export function Header() {
   const [ann, setAnn] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [ph, setPh] = useState("");
+  const [user, setUser] = useState<{ name: string; avatar?: string } | null>(null);
   const total = useAnimatedNumber(cart.subtotal);
+
+  // Vérifier si le client est connecté
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.authenticated && d.user) setUser(d.user);
+        else setUser(null);
+      })
+      .catch(() => {});
+  }, [pathname]);
 
   // Barre d'annonces : les messages défilent verticalement
   useEffect(() => {
@@ -117,6 +129,22 @@ export function Header() {
             <button aria-label={dict.header.searchLabel}><Icon name="search" /></button>
           </form>
           <div className="hi">
+            <Link className="hb" href={user ? `/${locale}/mon-compte` : `/${locale}/connexion`}>
+              {user?.avatar ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  style={{ width: 24, height: 24, borderRadius: "50%", objectFit: "cover" }}
+                />
+              ) : (
+                <Icon name="user" />
+              )}
+              <span>
+                <small>{user ? dict.header.hello : dict.header.account}</small>
+                {user ? user.name.split(" ")[0] : dict.header.account}
+              </span>
+            </Link>
             <Link className="hb" href={`/${locale}/commande`}>
               <Icon name="package-search" /><span><small>{dict.header.track}</small>{dict.header.myOrder}</span>
             </Link>

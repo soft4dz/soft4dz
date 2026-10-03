@@ -41,6 +41,22 @@ export default function CheckoutPage() {
     if (cart.ready && !cart.lines.length && !busy) router.replace(`/${locale}/panier`);
   }, [cart.ready, cart.lines.length, busy, locale, router]);
 
+  // Pré-remplir si le client est connecté
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.authenticated && d.user) {
+          setValues((prev) => ({
+            ...prev,
+            name: prev.name || d.user.name || "",
+            email: prev.email || d.user.email || "",
+          }));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const set = (f: CheckoutField) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [f]: e.target.value });
     if (errors[f]) setErrors({ ...errors, [f]: false });
