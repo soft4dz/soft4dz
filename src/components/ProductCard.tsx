@@ -22,18 +22,26 @@ export function ProductCard({ p, delay = 0, visible = true }: { p: Product; dela
   const quote = base === 0;
   const href = `/${locale}/produit/${p.slug}`;
 
-  // Inclinaison 3D + reflet qui suivent la souris
+  // Inclinaison 3D + reflet qui suivent la souris (optimisé avec RAF)
+  const moveRaf = useRef(0);
   const onMove = (e: React.PointerEvent) => {
     if (e.pointerType !== "mouse" || reducedMotion() || !ref.current) return;
-    const el = ref.current, r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-    el.classList.add("tilting");
-    el.style.setProperty("--ry", `${(px - 0.5) * 12}deg`);
-    el.style.setProperty("--rx", `${(0.5 - py) * 10}deg`);
-    el.style.setProperty("--gx", `${px * 100}%`);
-    el.style.setProperty("--gy", `${py * 100}%`);
+    const clientX = e.clientX, clientY = e.clientY;
+    cancelAnimationFrame(moveRaf.current);
+    moveRaf.current = requestAnimationFrame(() => {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const px = (clientX - r.left) / r.width, py = (clientY - r.top) / r.height;
+      el.classList.add("tilting");
+      el.style.setProperty("--ry", `${(px - 0.5) * 12}deg`);
+      el.style.setProperty("--rx", `${(0.5 - py) * 10}deg`);
+      el.style.setProperty("--gx", `${px * 100}%`);
+      el.style.setProperty("--gy", `${py * 100}%`);
+    });
   };
   const onLeave = () => {
+    cancelAnimationFrame(moveRaf.current);
     const el = ref.current;
     if (!el) return;
     el.classList.remove("tilting");

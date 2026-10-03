@@ -35,10 +35,24 @@ export function Header() {
   }, [announce.length]);
 
   useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 40);
-    const raf = requestAnimationFrame(on);
-    window.addEventListener("scroll", on, { passive: true });
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", on); };
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          setScrolled((prev) => {
+            if (!prev && y > 60) return true;
+            if (prev && y < 20) return false;
+            return prev;
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Suggestions qui s'écrivent dans la barre de recherche
@@ -71,7 +85,7 @@ export function Header() {
 
   return (
     <>
-      <div className={`util ${scrolled ? "hide" : ""}`}>
+      <div className="util">
         <div className="w">
           <div className="ann" aria-live="polite">
             {announce.map((a, i) => (

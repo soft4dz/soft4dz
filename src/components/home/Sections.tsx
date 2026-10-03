@@ -15,7 +15,7 @@ import { t } from "@/lib/i18n";
 export function TrustBar() {
   const { dict } = useI18n();
   const [ref, on] = useReveal<HTMLElement>();
-  const n = useAnimatedNumber(on ? 12480 : 0, 1600);
+  const n = useAnimatedNumber(on ? 12480 : 0, 700);
   const t = dict.trust;
   return (
     <section ref={ref} className={`trust rv ${on ? "on" : ""}`}>
