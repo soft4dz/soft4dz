@@ -55,27 +55,6 @@ export function SettingsForm({ s }: { s: Settings }) {
           <label className="l" htmlFor="ls" style={{ marginTop: 10 }}>Alerte de stock bas</label>
           <input id="ls" name="lowStock" type="number" min={0} max={100} className="in" defaultValue={s.lowStock} />
           <small className="muted-s">Un badge apparaît dans le menu quand il reste ce nombre de clés ou moins.</small>
-        </section>
-
-        <section className="card box" style={{ marginTop: 16 }}>
-          <h2><Icon name="wrench" />Disponibilité du site</h2>
-          <label className="sw">
-            <span>
-              Mode « En construction »
-              <small>Affiche la page En construction aux visiteurs de la boutique. L&apos;accès /admin reste actif pour vous.</small>
-            </span>
-            <input type="checkbox" name="maintenanceMode" defaultChecked={s.maintenanceMode} />
-          </label>
-          <a
-            href="/fr/en-construction"
-            target="_blank"
-            rel="noopener"
-            className="btn b-out"
-            style={{ width: "100%", marginTop: 12, display: "flex", justifyContent: "center", gap: 6, fontSize: 13 }}
-          >
-            <Icon name="external-link" />
-            Voir la page En construction
-          </a>
           <button className="btn b-or" style={{ width: "100%", marginTop: 16 }} disabled={pending}>
             {pending ? <Icon name="loader" className="spin" /> : <Icon name="save" />}Enregistrer
           </button>
