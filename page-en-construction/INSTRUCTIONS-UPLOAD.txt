@@ -1,0 +1,45 @@
+================================================================================
+  PAGE « EN CONSTRUCTION » — SOFT4DZ (VERSION INDÉPENDANTE / STANDALONE)
+================================================================================
+
+Ce dossier contient une page d'attente complète, moderne et 100% autonome.
+Elle ne dépend pas de Node.js, Next.js ou d'une base de données : vous pouvez
+l'uploader directement sur n'importe quel hébergement web (cPanel, FTP, Apache, Nginx).
+
+--------------------------------------------------------------------------------
+📁 CONTENU DU DOSSIER :
+--------------------------------------------------------------------------------
+1. index.html   : La page web principale avec support Français / Arabe / Anglais.
+2. style.css    : Le design glassmorphism moderne avec couleurs SOFT4DZ et mode sombre.
+3. script.js    : Gestion du basculement de langue, barre de progression et WhatsApp.
+4. logo.png     : Logo officiel SOFT4DZ.
+
+--------------------------------------------------------------------------------
+🚀 COMMENT L'INSTALLER SUR VOTRE SERVEUR / CPANEL :
+--------------------------------------------------------------------------------
+Option 1 — Sur votre hébergement cPanel :
+1. Connectez-vous à votre cPanel.
+2. Ouvrez le « Gestionnaire de fichiers » (File Manager).
+3. Rendez-vous dans le dossier « public_html ».
+4. Uploadez les 4 fichiers de ce dossier directement dans « public_html » :
+   - index.html
+   - style.css
+   - script.js
+   - logo.png
+5. Dès l'upload, toute personne qui visitera votre nom de domaine verra immédiatement
+   la page « Site en construction » avec votre contact WhatsApp !
+
+Option 2 — Par FTP (FileZilla) :
+1. Connectez-vous avec vos identifiants FTP.
+2. Glissez-déposez les 4 fichiers de ce dossier dans le dossier racine de votre site (public_html ou htdocs).
+
+--------------------------------------------------------------------------------
+💡 FONCTIONNALITÉS INCLUSES :
+--------------------------------------------------------------------------------
+- Sélecteur de langue interactif en haut : Français, العربية (avec affichage RTL), English.
+- Bouton de commande direct WhatsApp pour ne perdre aucun client pendant la construction.
+- Formulaire pour recueillir les e-mails des visiteurs intéressés.
+- Barre de progression 95% prêt.
+- Coordonnées de contact (Téléphone, E-mail, WhatsApp 7j/7).
+- 100% responsive (fonctionne parfaitement sur smartphone, tablette et PC).
+================================================================================

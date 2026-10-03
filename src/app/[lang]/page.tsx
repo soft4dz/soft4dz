@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { hasLocale, t } from "@/lib/i18n";
 import { getDictionary } from "@/lib/dictionaries";
 import { catalogue, categories, deals } from "@/lib/catalog";
 import { getProducts } from "@/lib/products";
 import { getActiveSlides } from "@/lib/slides";
-import { getSettings } from "@/lib/settings";
 import { Icon } from "@/components/Icon";
 import { HeroCarousel } from "@/components/home/HeroCarousel";
 import { Brands, Catalogue, Deals, Newsletter, Services, TrustBar } from "@/components/home/Sections";
@@ -13,13 +12,8 @@ import { Brands, Catalogue, Deals, Newsletter, Services, TrustBar } from "@/comp
 export default async function Home({ params, searchParams }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
-
-  const settings = await getSettings();
-  if (settings.maintenanceMode) {
-    redirect(`/${lang}/en-construction`);
-  }
-
   const sp = await searchParams;
+
   const cat = typeof sp.cat === "string" ? sp.cat : undefined;
   const q = typeof sp.q === "string" ? sp.q : undefined;
   const d = getDictionary(lang);

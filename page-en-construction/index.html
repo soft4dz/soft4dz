@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOFT4DZ — Site en construction · Bientôt disponible</title>
+  <meta name="description" content="SOFT4DZ arrive très bientôt ! Licences logicielles officielles et abonnements digitaux en Algérie avec paiement CIB et Edahabia.">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Lueur ambiante en arrière-plan -->
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <!-- Carte centrale -->
+  <main class="construction-card">
+    
+    <!-- En-tête : Logo et sélecteur de langue -->
+    <header class="card-header">
+      <div class="logo-wrap">
+        <img src="logo.png" alt="SOFT4DZ Logo" class="logo-img">
+        <span class="logo-text">SOFT4<span>DZ</span></span>
+      </div>
+
+      <div class="lang-selector">
+        <button type="button" class="lang-btn active" data-lang="fr">Français</button>
+        <button type="button" class="lang-btn" data-lang="ar">العربية</button>
+        <button type="button" class="lang-btn" data-lang="en">English</button>
+      </div>
+    </header>
+
+    <!-- Badge animé -->
+    <div class="launch-badge">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      <span id="txt-badge">LANCEMENT IMMINENT</span>
+    </div>
+
+    <!-- Titre et sous-titre -->
+    <h1 class="main-title" id="txt-title">Notre nouvelle plateforme arrive très bientôt !</h1>
+    <p class="main-desc" id="txt-desc">
+      Nous finalisons les derniers détails de la boutique SOFT4DZ pour vous proposer les meilleures licences logicielles officielles et abonnements digitaux au meilleur prix en DZD, avec livraison instantanée et paiement sécurisé par carte CIB et Edahabia (SATIM).
+    </p>
+
+    <!-- Barre d'avancement du projet -->
+    <div class="progress-container">
+      <div class="progress-labels">
+        <span id="txt-progress-label">Lancement imminent · 95% prêt</span>
+        <span style="color: var(--teal-glow);">95%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Formulaire d'alerte Email -->
+    <form class="notify-form" id="notify-form">
+      <input type="email" id="notify-email" class="notify-input" placeholder="Votre adresse e-mail…" required>
+      <button type="submit" class="notify-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+        </svg>
+        <span id="txt-notify-btn">M'avertir du lancement</span>
+      </button>
+    </form>
+    <div class="notify-success" id="notify-success">
+      <span id="txt-notify-success">🎉 C'est noté ! Vous recevrez une invitation prioritaire et un code promo exclusif.</span>
+    </div>
+
+    <!-- Boîte VIP Commande Immédiate WhatsApp -->
+    <section class="vip-whatsapp-box">
+      <div class="vip-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span id="txt-vip-title">Besoin d'une licence ou d'un compte immédiatement ?</span>
+      </div>
+      <p class="vip-desc" id="txt-vip-desc">
+        Notre équipe commerciale reste à votre disposition 7j/7 pour traiter votre commande en direct et vous livrer en quelques minutes !
+      </p>
+      <a href="https://wa.me/213550312783?text=Bonjour%20SOFT4DZ%2C%20je%20souhaite%20commander%20un%20produit%20pendant%20que%20le%20site%20est%20en%20construction." id="vip-wa-link" target="_blank" rel="noopener" class="vip-wa-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+        <span id="txt-vip-btn">Commander en direct sur WhatsApp</span>
+      </a>
+    </section>
+
+    <!-- Aperçu des services -->
+    <h3 class="services-title" id="txt-services-title">Ce qui vous attend sur SOFT4DZ :</h3>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+        </div>
+        <h4 id="txt-srv1-title">Licences Officielles</h4>
+        <p id="txt-srv1-desc">Windows 11/10 Pro, Office 2024/2021 et Antivirus avec activation garantie à vie.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+            <polyline points="17 2 12 7 7 2"/>
+          </svg>
+        </div>
+        <h4 id="txt-srv2-title">Abonnements Premium</h4>
+        <p id="txt-srv2-desc">Netflix 4K, Canva Pro, Spotify, ChatGPT Plus et bien d'autres aux tarifs algériens.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </div>
+        <h4 id="txt-srv3-title">Paiement 100% Algérien</h4>
+        <p id="txt-srv3-desc">Paiement sécurisé par carte CIB, Edahabia SATIM ou versement CCP avec validation rapide.</p>
+      </div>
+
+      <div class="service-card">
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <h4 id="txt-srv4-title">Livraison Instantanée</h4>
+        <p id="txt-srv4-desc">Réception de vos clés d'activation directement sur votre écran et par e-mail.</p>
+      </div>
+    </div>
+
+    <!-- Pied de page : Coordonnées -->
+    <footer class="card-footer">
+      <div class="contact-links">
+        <a href="tel:0550312783" class="contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          <span>0550 31 27 83</span>
+        </a>
+
+        <a href="mailto:contact@soft4dz.com" class="contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <span>contact@soft4dz.com</span>
+        </a>
+
+        <a href="https://wa.me/213550312783?text=Bonjour%20SOFT4DZ%2C%20j%27ai%20une%20question." target="_blank" rel="noopener" class="contact-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.9 5.86L2.6 22l4.31-1.13C8.42 21.57 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2z"/>
+          </svg>
+          <span id="txt-wa-help">WhatsApp 7j/7</span>
+        </a>
+      </div>
+
+      <div class="copyright">
+        © 2026 SOFT4DZ. <span id="txt-rights">Tous droits réservés.</span>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
