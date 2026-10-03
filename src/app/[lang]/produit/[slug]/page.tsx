@@ -5,6 +5,7 @@ import { hasLocale, t } from "@/lib/i18n";
 import { getDictionary } from "@/lib/dictionaries";
 import { categories, related } from "@/lib/catalog";
 import { getProductBySlug, getProducts } from "@/lib/products";
+import { stockLevels } from "@/lib/keys";
 import { Icon } from "@/components/Icon";
 import { ProductBuy } from "@/components/product/ProductBuy";
 import { ProductCard } from "@/components/ProductCard";
@@ -18,10 +19,15 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/produit/[s
 
 export default async function ProductPage({ params }: PageProps<"/[lang]/produit/[slug]">) {
   const { lang, slug } = await params;
-  const p = await getProductBySlug(slug);
+  const [p, levels] = await Promise.all([getProductBySlug(slug), stockLevels()]);
   if (!hasLocale(lang) || !p || p.active === false) notFound();
   const d = getDictionary(lang);
   const service = p.category === "svc";
+
+  const stockMap: Record<string, number> = {};
+  for (const opt of p.options) {
+    stockMap[opt.id] = levels.get(`${p.slug}|${opt.id}`) ?? 0;
+  }
 
   return (
     <>
@@ -31,7 +37,8 @@ export default async function ProductPage({ params }: PageProps<"/[lang]/produit
         <span>{t(p.name, lang)}</span>
       </nav>
 
-      <ProductBuy p={p} />
+      <ProductBuy p={p} stockMap={stockMap} />
+
 
       <section className="card desc">
         <h2>{d.product.description}</h2>

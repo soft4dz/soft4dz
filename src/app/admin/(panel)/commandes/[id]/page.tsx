@@ -25,6 +25,16 @@ export default async function OrderAdmin({ params, searchParams }: PageProps<"/a
   const pic = (slug: string) => products.find((p) => p.slug === slug);
   const wa = `https://wa.me/213${order.customer.phone.replace(/\s/g, "").replace(/^0/, "")}`;
 
+  const keysSummary = order.lines
+    .map((l) => `${l.name} (${l.optionLabel}) :\n${(l.keys ?? []).join("\n")}`)
+    .filter(Boolean)
+    .join("\n\n");
+
+  const waDeliveryMsg = encodeURIComponent(
+    `Bonjour ${order.customer.name},\n\nVotre commande SOFT4DZ #${order.id} est prête ! 🎉\n\n${keysSummary ? `Vos accès / clés d'activation :\n${keysSummary}\n\n` : ""}Vous pouvez également retrouver vos clés à tout moment sur votre lien de commande :\nhttps://soft4dz.com/${order.locale}/commande/${order.id}\n\nMerci pour votre confiance !`
+  );
+  const waDeliveryLink = `https://wa.me/213${order.customer.phone.replace(/\s/g, "").replace(/^0/, "")}?text=${waDeliveryMsg}`;
+
   return (
     <>
       <div className="adm-h">
@@ -58,15 +68,35 @@ export default async function OrderAdmin({ params, searchParams }: PageProps<"/a
             {sp.stock === "ok" && <div className="msg ok" style={{ marginBottom: 12 }}><Icon name="check-circle-2" />Commande livrée avec les clés du stock.</div>}
             {sp.stock === "manque" && <div className="msg err" style={{ marginBottom: 12 }}><Icon name="info" />Stock insuffisant : ajoutez des clés dans « Stock de clés » ou saisissez-les ci-dessous.</div>}
             {order.autoDelivered && <p className="muted-s" style={{ marginBottom: 10 }}>Livrée automatiquement depuis le stock.</p>}
+
+            {order.status === "paid" && !stockOk && (
+              <div className="msg" style={{ background: "rgba(217, 127, 30, 0.09)", border: "1px solid rgba(217, 127, 30, 0.3)", color: "var(--fg)", marginBottom: 14 }}>
+                <Icon name="clock" style={{ color: "var(--gold)" }} />
+                <span style={{ fontSize: 13.5 }}>
+                  <b>Commande payée sans stock immédiat</b> : Achetez la clé auprès de votre fournisseur et collez-la ci-dessous. Dès que vous cliquez sur « Livrer », le client verra ses clés s'afficher <b>en direct sur son écran</b> !
+                </span>
+              </div>
+            )}
+
             {order.status === "paid" && (
               <form action={deliverFromStockAction} style={{ marginBottom: 14 }}>
                 <input type="hidden" name="id" value={order.id} />
                 <button className="btn b-pri" disabled={!stockOk} title={stockOk ? "" : "Stock insuffisant"}><Icon name="zap" />Livrer depuis le stock</button>
-                <small className="muted-s" style={{ marginInlineStart: 10 }}>{stockOk ? "Les clés nécessaires sont disponibles." : "Pas assez de clés en stock."}</small>
+                <small className="muted-s" style={{ marginInlineStart: 10 }}>{stockOk ? "Les clés nécessaires sont disponibles." : "Pas assez de clés en stock (achat à la demande)."}</small>
               </form>
             )}
+
             {order.status === "paid" || order.status === "delivered" ? (
-              <DeliverForm order={order} />
+              <>
+                <DeliverForm order={order} />
+                {order.status === "delivered" && (
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid var(--border)" }}>
+                    <a className="btn b-or" href={waDeliveryLink} target="_blank" rel="noopener">
+                      <Icon name="message-circle" />Envoyer les clés sur WhatsApp en 1 clic
+                    </a>
+                  </div>
+                )}
+              </>
             ) : (
               <p style={{ fontSize: 14, color: "var(--muted)" }}>
                 {order.status === "awaiting_transfer"

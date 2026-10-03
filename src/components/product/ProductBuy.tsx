@@ -11,7 +11,7 @@ import { waLink } from "@/lib/site";
 import { t } from "@/lib/i18n";
 
 /** Galerie + bloc d'achat de la fiche produit (partie interactive). */
-export function ProductBuy({ p }: { p: Product }) {
+export function ProductBuy({ p, stockMap = {} }: { p: Product; stockMap?: Record<string, number> }) {
   const { locale, dict } = useI18n();
   const cart = useCart();
   const router = useRouter();
@@ -27,6 +27,7 @@ export function ProductBuy({ p }: { p: Product }) {
   const unit = finalPrice(p, opt);
   const base = p.options.find((o) => o.id === opt)!.price;
   const quote = base === 0;
+  const hasStock = (stockMap[opt] ?? 0) > 0;
   const now = useAnimatedNumber(unit * qty);
   const cur = currency(locale);
   const perkIcons = ["zap", "badge-check", "refresh-ccw", "credit-card"] as const;
@@ -54,9 +55,15 @@ export function ProductBuy({ p }: { p: Product }) {
           )}
           <div className="bd">
             {p.deal && <span className="o">-{p.deal.percent}%</span>}
-            {!quote && <span><Icon name="zap" />{dict.product.perks[0][0]}</span>}
+            {!quote && (
+              <span style={hasStock ? undefined : { background: "rgba(46, 100, 168, 0.9)" }}>
+                <Icon name={hasStock ? "zap" : "clock"} />
+                {hasStock ? dict.done.instantStock : dict.done.fastDelivery}
+              </span>
+            )}
           </div>
         </div>
+
         {photos.length > 1 && (
           <div className="thumbs">
             {photos.map((src, i) => (
@@ -127,9 +134,23 @@ export function ProductBuy({ p }: { p: Product }) {
         )}
 
         <div className="perks">
-          {dict.product.perks.map(([t, s], i) => (
-            <div key={t}><Icon name={perkIcons[i]} /><span><b>{t}</b><small>{s}</small></span></div>
-          ))}
+          {dict.product.perks.map(([t, s], i) => {
+            if (i === 0 && !quote) {
+              const perkTitle = hasStock ? dict.done.instantStock : dict.done.fastDelivery;
+              const perkSub = hasStock
+                ? (locale === "ar" ? "تسليم فوري للمفتاح على الشاشة" : locale === "en" ? "Key delivered immediately on screen" : "Clé délivrée immédiatement à l'écran")
+                : (locale === "ar" ? "تجهيز سريع من طرف فريقنا (5-15 دقيقة)" : locale === "en" ? "Fast preparation by our team (5-15 min)" : "Préparation prioritaire par notre équipe (5-15 min)");
+              return (
+                <div key={t}>
+                  <Icon name={hasStock ? "zap" : "clock"} />
+                  <span><b>{perkTitle}</b><small>{perkSub}</small></span>
+                </div>
+              );
+            }
+            return (
+              <div key={t}><Icon name={perkIcons[i]} /><span><b>{t}</b><small>{s}</small></span></div>
+            );
+          })}
         </div>
         <div className="wa-line"><Icon name="message-circle" />{dict.product.question} <a href={ask} target="_blank" rel="noopener">{dict.product.askWhatsapp}</a></div>
       </div>
