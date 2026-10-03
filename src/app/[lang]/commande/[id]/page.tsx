@@ -5,6 +5,7 @@ import { getDictionary } from "@/lib/dictionaries";
 import { getAllProducts } from "@/lib/products";
 import { getOrder, updateOrder } from "@/lib/orders";
 import { chargilyEnabled, getCheckout } from "@/lib/chargily";
+import { getSlickPayInvoice, slickpayEnabled } from "@/lib/slickpay";
 import { formatPrice } from "@/lib/format";
 import { waLink } from "@/lib/site";
 import { getSettings } from "@/lib/settings";
@@ -36,7 +37,22 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/[l
     );
   }
 
-  // Au retour de Chargily, on revérifie le statut réel du paiement (le webhook peut ne pas être encore arrivé)
+  // 1. Au retour de Slick-Pay, on revérifie le statut de la facture SATIM
+  if (order.status === "pending" && order.slickpayInvoiceId && slickpayEnabled()) {
+    try {
+      const inv = await getSlickPayInvoice(order.slickpayInvoiceId);
+      const isPaid = inv.completed === 1 || inv.data?.completed === 1;
+      if (isPaid) {
+        await updateOrder(order.id, { status: "paid" });
+        await deliverFromStock(order.id);
+        order = (await getOrder(order.id)) ?? order;
+      }
+    } catch (e) {
+      console.error("SlickPay verification error:", e);
+    }
+  }
+
+  // 2. Au retour de Chargily
   if (order.status === "pending" && order.chargilyCheckoutId && chargilyEnabled()) {
     try {
       const c = await getCheckout(order.chargilyCheckoutId);

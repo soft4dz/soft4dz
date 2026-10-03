@@ -36,6 +36,7 @@ export type Order = {
   status: OrderStatus;
   demo?: boolean;
   chargilyCheckoutId?: string;
+  slickpayInvoiceId?: number | string;
   paidAt?: string;
   deliveredAt?: string;
   /** Note interne, jamais montrée au client */
